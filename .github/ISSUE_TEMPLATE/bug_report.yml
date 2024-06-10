@@ -22,8 +22,8 @@ body:
     attributes:
       label: Context (optional)
       description: |
-    How has this issue affected you? What are you trying to accomplish?
-    Providing context helps us come up with a solution that is most useful in the real world
+        How has this issue affected you? What are you trying to accomplish?
+        Providing context helps us come up with a solution that is most useful in the real world
     validations:
       required: false
 #  - type: textarea
