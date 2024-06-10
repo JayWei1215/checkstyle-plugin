@@ -1,0 +1,40 @@
+name: Documentation
+description: Report a problem with our documentation
+labels: [ "documentation" ]
+assignees: [ ]
+body:
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue type
+      options:
+        - Wrong or misleading information
+        - Missing information
+        - Styling or Accessibility
+        - Typo (please open a PR instead)
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem description
+      description: |
+        Please describe the problem as concisely as possible.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context (optional)
+      description: |
+        How has this issue affected you? What are you trying to accomplish?
+        Providing context helps us come up with a solution that is most useful in the real world
+    validations:
+      required: false
+  - type: input
+    id: page
+    attributes:
+      label: Page with the problem
+      description: Please, provide a link to the relevant documentation page
+    validations:
+      required: true
