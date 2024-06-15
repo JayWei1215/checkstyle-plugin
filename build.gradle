@@ -15,8 +15,22 @@ dependencies {
     implementation gradleApi()
     implementation 'com.google.guava:guava:32.1.1-jre'
     implementation localGroovy()
+
+    testImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
+    testImplementation 'org.spockframework:spock-core'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation gradleTestKit()
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+//    integrationTestImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
+//    integrationTestImplementation 'org.spockframework:spock-core'
+//    integrationTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//
+//    functionalTestImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
+//    functionalTestImplementation 'org.spockframework:spock-core'
+//    functionalTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {
     useJUnitPlatform()
 }
+
