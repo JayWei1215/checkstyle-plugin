@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'groovy'
+    id 'java-gradle-plugin'
 }
 
 group = 'org.gradle'
@@ -9,9 +11,52 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    integrationTestCompileClasspath {
+        canBeResolved = true
+        canBeConsumed = false
+        extendsFrom configurations.implementation
+    }
+    integrationTestRuntimeClasspath {
+        canBeResolved = true
+        canBeConsumed = false
+        extendsFrom configurations.runtimeClasspath
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        groovy {
+            srcDirs = ['src/test/groovy']
+        }
+        compileClasspath += sourceSets.main.output + configurations.integrationTestCompileClasspath
+        runtimeClasspath += sourceSets.main.output + configurations.integrationTestRuntimeClasspath
+    }
+    integrationTest {
+        groovy {
+            srcDirs = ['src/integrationTest/groovy']
+        }
+        compileClasspath += sourceSets.main.output + configurations.integrationTestCompileClasspath
+        runtimeClasspath += sourceSets.main.output + configurations.integrationTestRuntimeClasspath
+    }
+    functionalTest {
+        groovy {
+            srcDirs = ['src/functionalTest/groovy']
+        }
+        compileClasspath += sourceSets.main.output + configurations.integrationTestCompileClasspath
+        runtimeClasspath += sourceSets.main.output + configurations.integrationTestRuntimeClasspath
+    }
+}
+
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
     implementation gradleApi()
     implementation 'com.google.guava:guava:32.1.1-jre'
     implementation localGroovy()
@@ -19,18 +64,35 @@ dependencies {
     testImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
     testImplementation 'org.spockframework:spock-core'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation gradleTestKit()
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
-//    integrationTestImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
-//    integrationTestImplementation 'org.spockframework:spock-core'
-//    integrationTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-//
-//    functionalTestImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
-//    functionalTestImplementation 'org.spockframework:spock-core'
-//    functionalTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    integrationTestImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
+    integrationTestImplementation 'org.spockframework:spock-core'
+    integrationTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    integrationTestImplementation(project)
+
+    functionalTestImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
+    functionalTestImplementation 'org.spockframework:spock-core'
+    functionalTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {
     useJUnitPlatform()
+}
+
+def integrationTestTask = tasks.register("integrationTest", Test) {
+    description = 'Runs the integration tests.'
+    group = "verification"
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    mustRunAfter(tasks.named('test'))
+}
+
+tasks.withType(Test).configureEach {
+    // Using JUnitPlatform for running tests
+    useJUnitPlatform()
+}
+
+tasks.named('check') {
+    dependsOn integrationTestTask
 }
 

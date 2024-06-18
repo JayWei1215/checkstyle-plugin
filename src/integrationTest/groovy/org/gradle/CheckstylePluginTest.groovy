@@ -28,7 +28,7 @@ class CheckstylePluginTest extends Specification {
 
     def setup() {
         project = ProjectBuilder.builder().build()
-        project.pluginManager.apply(org.gradle.api.plugins.quality.CheckstylePlugin)
+        project.pluginManager.apply(org.gradle.CheckstylePlugin)
         project.file("config/checkstyle").mkdirs()
         project.file("custom").mkdirs()
     }
@@ -50,7 +50,7 @@ class CheckstylePluginTest extends Specification {
 
     def "configures checkstyle extension"() {
         expect:
-        org.gradle.api.plugins.quality.CheckstyleExtension extension = project.extensions.checkstyle
+        org.gradle.CheckstyleExtension extension = project.extensions.checkstyle
         extension.configFile == project.file("config/checkstyle/checkstyle.xml")
         extension.configDirectory.get().getAsFile() == project.file("config/checkstyle")
         extension.config.inputFiles.singleFile == project.file("config/checkstyle/checkstyle.xml")
