@@ -1,6 +1,6 @@
-package org.gradle
+package org.gradle.unitTest
 
-
+import org.gradle.Checkstyle
 import org.gradle.api.attributes.Bundling
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements

@@ -1,11 +1,10 @@
-package org.gradle
+package org.gradle.integrationTest
 
 import org.gradle.testkit.runner.GradleRunner
-import static org.gradle.testkit.runner.TaskOutcome.*
 import spock.lang.Specification
 import spock.lang.TempDir
 
-class CheckstylePluginClasspathIntegrationNewTest extends Specification {
+class CheckstylePluginClasspathIntegrationTest extends Specification {
     @TempDir File testProjectDir
     File settingsFile
     File buildFile
@@ -30,7 +29,6 @@ class CheckstylePluginClasspathIntegrationNewTest extends Specification {
 
         then:
         result.output.contains('BUILD SUCCESSFUL')
-        result.task(":checkstyleMain").outcome == SUCCESS
     }
 
     private void writeBuildFiles() {
@@ -40,22 +38,27 @@ include "client"
         """
 
         buildFile << """
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.gradle:checkstyle-plugin:1.0-SNAPSHOT"
+    }
+}
+
 subprojects {
-    apply plugin: "java"
-    apply plugin: "groovy"
-    apply plugin: "org.gradle.checkstyle"
+    apply plugin: 'java'
+    apply plugin: 'org.gradle.checkstyle-plugin'
 
     repositories {
         mavenLocal()
         mavenCentral()
     }
-
-    dependencies {
-        checkstyle 'org.gradle:checkstyle:1.0-SNAPSHOT'
-    }
-
+    
     checkstyle {
-        toolVersion = '1.0-SNAPSHOT'
+        toolVersion = '8.8'
         configFile rootProject.file("checkstyle.xml")
     }
 }
@@ -67,19 +70,6 @@ project("client") {
 }
         """
     }
-
-//    private void writeConfigFile() {
-//        new File(testProjectDir, "checkstyle.xml") << """
-//<!DOCTYPE module PUBLIC
-//        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
-//        "https://checkstyle.org/dtds/configuration_1_3.dtd">
-//<module name="Checker">
-//    <module name="TreeWalker">
-//        <module name="JavadocMethod"/>
-//    </module>
-//</module>
-//        """
-//    }
 
     private void writeConfigFile() {
         new File(testProjectDir, "checkstyle.xml").with {

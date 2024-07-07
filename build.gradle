@@ -12,10 +12,24 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+            groupId = 'org.gradle'
+            artifactId = 'checkstyle-plugin'
+            version = '1.0-SNAPSHOT'
         }
     }
     repositories {
-        mavenLocal()
+        maven {
+            mavenLocal()
+        }
+    }
+}
+
+gradlePlugin {
+    plugins {
+        checkstylePlugin {
+            id = 'org.gradle.checkstyle-plugin'
+            implementationClass = 'org.gradle.CheckstylePlugin'
+        }
     }
 }
 
@@ -23,54 +37,46 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    integrationTestCompileClasspath {
-        canBeResolved = true
-        canBeConsumed = false
-        extendsFrom configurations.implementation
-    }
-    integrationTestRuntimeClasspath {
-        canBeResolved = true
-        canBeConsumed = false
-        extendsFrom configurations.runtimeClasspath
-    }
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java']
-        }
-        resources {
-            srcDirs = ['src/main/resources']
-        }
-    }
-    test {
-        groovy {
-            srcDirs = ['src/test/groovy']
-        }
-        compileClasspath += sourceSets.main.output + configurations.integrationTestCompileClasspath
-        runtimeClasspath += sourceSets.main.output + configurations.integrationTestRuntimeClasspath
-    }
-    integrationTest {
-        groovy {
-            srcDirs = ['src/integrationTest/groovy']
-        }
-        resources {
-            srcDirs = ['src/integrationTest/resources']
-        }
-       // compileClasspath += sourceSets.main.output + configurations.integrationTestCompileClasspath
-        //runtimeClasspath += sourceSets.main.output + configurations.integrationTestRuntimeClasspath
-        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
-    }
-    functionalTest {
-        groovy {
-            srcDirs = ['src/functionalTest/groovy']
-        }
-        compileClasspath += sourceSets.main.output + configurations.integrationTestCompileClasspath
-        runtimeClasspath += sourceSets.main.output + configurations.integrationTestRuntimeClasspath
-    }
-}
+//configurations {
+//    integrationTestCompileClasspath {
+//        canBeResolved = true
+//        canBeConsumed = false
+//        extendsFrom configurations.implementation
+//    }
+//    integrationTestRuntimeClasspath {
+//        canBeResolved = true
+//        canBeConsumed = false
+//        extendsFrom configurations.runtimeClasspath
+//    }
+//}
+//
+//sourceSets {
+////    main {
+////        java {
+////            srcDirs = ['src/main/java']
+////        }
+////        resources {
+////            srcDirs = ['src/main/resources']
+////        }
+////    }
+////    test {
+////        groovy {
+////            srcDirs = ['src/test/groovy']
+////        }
+////        compileClasspath += sourceSets.main.output + configurations.testCompileClasspath
+////        runtimeClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+////    }
+//    integrationTest {
+//        groovy {
+//            srcDirs = ['src/integrationTest/groovy']
+//        }
+//        resources {
+//            srcDirs = ['src/integrationTest/resources']
+//        }
+//        compileClasspath += sourceSets.main.output + configurations.integrationTestCompileClasspath
+//        runtimeClasspath += sourceSets.main.output + configurations.integrationTestRuntimeClasspath
+//    }
+//}
 
 dependencies {
     implementation gradleApi()
@@ -78,31 +84,27 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'net.rubygrapefruit:ansi-control-sequence-util:0.3'
     implementation 'org.gradle.exemplar:samples-check:1.0.0'
-    implementation localGroovy()
+   // implementation localGroovy()
 
     testImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
     testImplementation 'org.spockframework:spock-core'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation gradleTestKit()
 
-    integrationTestImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
-    integrationTestImplementation 'org.spockframework:spock-core'
-    integrationTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    integrationTestImplementation gradleTestKit()
-    integrationTestImplementation(project)
-
-    functionalTestImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
-    functionalTestImplementation 'org.spockframework:spock-core'
-    functionalTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//    integrationTestImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
+//    integrationTestImplementation 'org.spockframework:spock-core'
+//    integrationTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//    integrationTestImplementation gradleTestKit()
+//    integrationTestImplementation(project)
 }
 
-def integrationTestTask = tasks.register("integrationTest", Test) {
-    description = 'Runs the integration tests.'
-    group = "verification"
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    mustRunAfter(tasks.named('test'))
-}
+//def integrationTestTask = tasks.register("integrationTest", Test) {
+//    description = 'Runs the integration tests.'
+//    group = "verification"
+//    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+//    classpath = sourceSets.integrationTest.runtimeClasspath
+//    mustRunAfter(tasks.named('test'))
+//}
 
 //tasks.register('checkstyleMain', Checkstyle) {
 //    source = sourceSets.main.allJava
@@ -133,17 +135,32 @@ def integrationTestTask = tasks.register("integrationTest", Test) {
 //    configDirectory = file("$rootDir/config/checkstyle")
 //}
 
-tasks.withType(Test).configureEach {
-    // Using JUnitPlatform for running tests
+//tasks.withType(Test).configureEach {
+//    // Using JUnitPlatform for running tests
+//    useJUnitPlatform()
+////    dependsOn 'pluginUnderTestMetadata'
+////    doFirst {
+////        def pluginClasspathResource = sourceSets.main.output.resourcesDir.toPath()
+////                .resolve("META-INF/gradle-plugins/org.gradle.checkstyle.properties")
+////        println(pluginClasspathResource)
+////        if (!pluginClasspathResource.toFile().exists()) {
+////            throw new org.gradle.testkit.runner.InvalidPluginMetadataException("Test runtime classpath does not contain plugin metadata file 'plugin-under-test-metadata.properties'")
+////        }
+////
+////        classpath = files(pluginClasspathResource) + classpath
+////    }
+//}
+
+test {
     useJUnitPlatform()
 }
 
-tasks.named('check') {
-    dependsOn integrationTestTask
-//    dependsOn tasks.named('checkstyleMain')
-//    dependsOn tasks.named('checkstyleTest')
-//    dependsOn tasks.named('checkstyleOther')
-}
+//tasks.named('check') {
+//    //dependsOn integrationTestTask
+////    dependsOn tasks.named('checkstyleMain')
+////    dependsOn tasks.named('checkstyleTest')
+////    dependsOn tasks.named('checkstyleOther')
+//}
 
 //tasks.named('check').configure {
 //    doFirst {

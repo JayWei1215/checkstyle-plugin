@@ -1,4 +1,4 @@
-package org.gradle
+package org.gradle.unitTest
 
 import org.gradle.api.reporting.Report
 import org.gradle.testfixtures.ProjectBuilder
