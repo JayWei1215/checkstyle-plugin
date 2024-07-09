@@ -3,6 +3,8 @@ plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id 'maven-publish'
+    id 'checkstyle'
+
 }
 
 group = 'org.gradle'
@@ -38,6 +40,8 @@ repositories {
 }
 
 dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
     implementation gradleApi()
     implementation 'com.google.guava:guava:32.1.1-jre'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
@@ -50,6 +54,11 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation gradleTestKit()
 
+}
+
+checkstyle {
+    toolVersion '10.9.3'
+    maxWarnings = 0
 }
 
 test {
