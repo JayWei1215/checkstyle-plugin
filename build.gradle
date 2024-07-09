@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'checkstyle'
+
 }
 
 group = 'org.gradle'
@@ -15,6 +17,11 @@ dependencies {
     implementation gradleApi()
     implementation 'com.google.guava:guava:32.1.1-jre'
     implementation localGroovy()
+}
+
+checkstyle {
+    toolVersion '10.9.3'
+    maxWarnings = 0
 }
 
 test {
