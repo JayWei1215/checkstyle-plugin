@@ -2,13 +2,21 @@ package org.gradle.integrationTest
 
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
+import spock.lang.TempDir
 
-class CheckstylePluginApplyTest extends Specification {
+class CheckstylePluginIntegrationTest extends Specification {
+    @TempDir File testProjectDir
+    File settingsFile
+    File buildFile
+
+    def setup() {
+        settingsFile = new File(testProjectDir, 'settings.gradle')
+        buildFile = new File(testProjectDir, 'build.gradle')
+    }
+
     def "checkstyle plugin applies correctly"() {
         given:
-        File projectDir = new File("build/tmp/testProject")
-        projectDir.mkdirs()
-        new File(projectDir, 'build.gradle') << """
+        buildFile << """
 plugins {
     id 'java'
     id 'org.gradle.checkstyle-plugin' version '1.0-SNAPSHOT'
@@ -31,18 +39,18 @@ test {
 }
         """
 
-        new File(projectDir, 'settings.gradle') << """
+        settingsFile << """
 pluginManagement {
     repositories {
         mavenLocal()
         gradlePluginPortal()
     }
 }
-rootProject.name = 'testProject'
+rootProject.name = 'testProjectDir'
         """
 
-        new File(projectDir, 'src/main/java').mkdirs()
-        new File(projectDir, 'src/main/java/Example.java') << """
+        new File(testProjectDir, 'src/main/java').mkdirs()
+        new File(testProjectDir, 'src/main/java/Example.java') << """
             public class Example {
                 public static void main(String[] args) {
                     System.out.println("Hello, world!");
@@ -50,8 +58,8 @@ rootProject.name = 'testProject'
             }
         """
 
-        new File(projectDir, 'config/checkstyle').mkdirs()
-        new File(projectDir, 'config/checkstyle/checkstyle.xml') << """
+        new File(testProjectDir, 'config/checkstyle').mkdirs()
+        new File(testProjectDir, 'config/checkstyle/checkstyle.xml') << """
             <!DOCTYPE module PUBLIC
                 "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
                 "https://checkstyle.org/dtds/configuration_1_3.dtd">
@@ -64,7 +72,7 @@ rootProject.name = 'testProject'
 
         when:
         def result = GradleRunner.create()
-                .withProjectDir(projectDir)
+                .withProjectDir(testProjectDir)
                 .withArguments('checkstyleMain')
                 .withPluginClasspath()
                 .build()

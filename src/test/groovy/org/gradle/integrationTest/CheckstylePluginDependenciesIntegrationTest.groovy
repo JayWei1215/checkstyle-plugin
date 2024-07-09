@@ -1,4 +1,4 @@
-package org.gradle
+package org.gradle.integrationTest
 
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
