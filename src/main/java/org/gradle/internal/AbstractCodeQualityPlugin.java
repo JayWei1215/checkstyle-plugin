@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Callables;
+import org.gradle.CheckstyleExtension;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Task;
@@ -20,7 +21,6 @@ import org.gradle.CodeQualityExtension;
 import org.gradle.api.reporting.ReportingExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
-
 
 import javax.inject.Inject;
 import java.io.File;
@@ -48,6 +48,7 @@ public abstract class AbstractCodeQualityPlugin<T> implements Plugin<ProjectInte
         configureTaskRule();
         configureSourceSetRule();
         configureCheckTask();
+        System.out.println("Welcome to the checkstyle plugin!" + project.getExtensions().getByType(CheckstyleExtension.class).getToolVersion());
     }
 
     protected abstract String getToolName();

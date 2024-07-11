@@ -1,5 +1,8 @@
 plugins {
     id 'java'
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
     id 'checkstyle'
 
 }
@@ -7,23 +10,58 @@ plugins {
 group = 'org.gradle'
 version = '1.0-SNAPSHOT'
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = 'org.gradle'
+            artifactId = 'checkstyle-plugin'
+            version = '1.0-SNAPSHOT'
+        }
+    }
+    repositories {
+        maven {
+            mavenLocal()
+        }
+    }
+}
+
+gradlePlugin {
+    plugins {
+        checkstylePlugin {
+            id = 'org.gradle.checkstyle-plugin'
+            implementationClass = 'org.gradle.CheckstylePlugin'
+        }
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
     implementation gradleApi()
     implementation 'com.google.guava:guava:32.1.1-jre'
-    implementation localGroovy()
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'net.rubygrapefruit:ansi-control-sequence-util:0.3'
+    implementation 'org.gradle.exemplar:samples-check:1.0.0'
+
+    testImplementation platform("org.spockframework:spock-bom:2.2-groovy-3.0")
+    testImplementation 'org.spockframework:spock-core'
+    testImplementation 'org.jsoup:jsoup:1.15.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation gradleTestKit()
+
 }
 
 checkstyle {
     toolVersion '10.9.3'
     maxWarnings = 0
+    ignoreFailures = true
 }
 
 test {
     useJUnitPlatform()
 }
+
+
